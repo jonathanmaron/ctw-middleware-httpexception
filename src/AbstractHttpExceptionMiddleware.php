@@ -74,6 +74,7 @@ abstract class AbstractHttpExceptionMiddleware implements MiddlewareInterface
     protected function isDevelopmentMode(): bool
     {
         // @todo there must be a better way of doing this :-)
+        // @todo get development mode status from container in factory?
 
         // "composer install --no-dev" removes this class
         $class = '\Laminas\DevelopmentMode\Status';
@@ -84,7 +85,7 @@ abstract class AbstractHttpExceptionMiddleware implements MiddlewareInterface
         ob_start();
         (new DevelopmentMode\Status())->__invoke();
         $ob  = (string) ob_get_clean();
-        $pos = strpos($ob, 'enabled');
+        $pos = strpos($ob, 'ENABLED');
 
         return is_int($pos);
     }
