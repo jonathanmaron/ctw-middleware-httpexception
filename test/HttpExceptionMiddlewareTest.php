@@ -10,11 +10,12 @@ use Ctw\Middleware\HttpExceptionMiddleware\HttpExceptionMiddlewareFactory;
 use Laminas\ServiceManager\ServiceManager;
 use Mezzio\LaminasView\LaminasViewRenderer as TemplateRenderer;
 use Middlewares\Utils\Dispatcher;
+use Middlewares\Utils\Factory;
 use Psr\Http\Message\ResponseInterface;
 
 class HttpExceptionMiddlewareTest extends AbstractCase
 {
-    public function testHttpExceptionMiddleware(): void
+    public function testHttpExceptionMiddlewareViaHtml(): void
     {
         $message = hash('sha256', (string) microtime(true));
 
@@ -32,6 +33,34 @@ class HttpExceptionMiddlewareTest extends AbstractCase
 
         $this->verifyEntity($entity, $message);
         $this->verifyException($exception, $message);
+    }
+
+    public function testHttpExceptionMiddlewareViaProblemJson(): void
+    {
+        $message = hash('sha256', (string) microtime(true));
+
+        $request = Factory::createServerRequest('GET', '/');
+        $request = $request->withHeader('Accept', 'application/json');
+
+        $stack = [
+            $this->getInstance(),
+            function () use ($message): ResponseInterface {
+                throw new HttpException\BadRequestException($message);
+            },
+        ];
+
+        $response = Dispatcher::run($stack, $request);
+        $contents = $response->getBody()->getContents();
+
+        $headers = $response->getHeaders();
+
+        $this->assertArrayHasKey('Content-Type', $headers);
+        $this->assertArrayHasKey(0, $headers['Content-Type']);
+        $this->assertSame($headers['Content-Type'][0], 'application/problem+json');
+
+        $entity = json_decode($contents, true);
+
+        $this->verifyProblemJson($entity, $message);
     }
 
     private function verifyEntity(array $array, string $message): void
@@ -54,6 +83,23 @@ class HttpExceptionMiddlewareTest extends AbstractCase
 
         $expected = sprintf('https://httpstatuses.com/%d', $statusCode);
         $this->assertSame($expected, $array['url']);
+    }
+
+    private function verifyProblemJson(array $array, string $message): void
+    {
+        $statusCode = HttpStatus::STATUS_BAD_REQUEST;
+
+        $expected = sprintf('https://httpstatuses.com/%d', $statusCode);
+        $this->assertSame($expected, $array['type']);
+
+        $expected = 'Bad Request';
+        $this->assertSame($expected, $array['title']);
+
+        $expected = $statusCode;
+        $this->assertSame($expected, $array['status']);
+
+        $expected = $message;
+        $this->assertSame($expected, $array['detail']);
     }
 
     private function verifyException(array $array, string $message): void
