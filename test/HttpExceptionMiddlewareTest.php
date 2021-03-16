@@ -3,7 +3,6 @@ declare(strict_types=1);
 
 namespace CtwTest\Middleware\HttpExceptionMiddleware;
 
-use Ctw\Http\Entity;
 use Ctw\Http\HttpException;
 use Ctw\Http\HttpStatus;
 use Ctw\Middleware\HttpExceptionMiddleware\HttpExceptionMiddleware;
@@ -35,38 +34,38 @@ class HttpExceptionMiddlewareTest extends AbstractCase
         $response = Dispatcher::run($stack);
         $contents = $response->getBody()->getContents();
 
-        [$entity, $exception] = unserialize($contents);
+        [$entity, $exception] = json_decode($contents, true);
 
         $this->verifyEntity($entity, $message);
         $this->verifyException($exception, $message);
     }
 
-    private function verifyEntity(Entity\HttpStatus $entity, string $message): void
+    private function verifyEntity(array $array, string $message): void
     {
         unset($message);
 
         $expected = HttpStatus::STATUS_BAD_REQUEST;
-        $this->assertSame($expected, $entity->statusCode);
+        $this->assertSame($expected, $array['statusCode']);
 
         $expected = 'Bad Request';
-        $this->assertSame($expected, $entity->name);
+        $this->assertSame($expected, $array['name']);
 
         $expected = 'The request cannot be fulfilled due to bad syntax.';
-        $this->assertSame($expected, $entity->phrase);
+        $this->assertSame($expected, $array['phrase']);
 
         $expected = 'Ctw\\Http\\HttpException\\BadRequestException';
-        $this->assertSame($expected, $entity->exception);
+        $this->assertSame($expected, $array['exception']);
 
         $expected = 'https://httpstatuses.com/400';
-        $this->assertSame($expected, $entity->url);
+        $this->assertSame($expected, $array['url']);
     }
 
-    private function verifyException(HttpException\BadRequestException $exception, string $message): void
+    private function verifyException(array $array, string $message): void
     {
         $expected = HttpStatus::STATUS_BAD_REQUEST;
-        $this->assertSame($expected, $exception->getStatusCode());
+        $this->assertSame($expected, $array['statusCode']);
 
         $expected = $message;
-        $this->assertSame($expected, $exception->getMessage());
+        $this->assertSame($expected, $array['message']);
     }
 }
