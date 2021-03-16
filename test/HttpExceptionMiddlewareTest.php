@@ -17,7 +17,7 @@ class HttpExceptionMiddlewareTest extends AbstractCase
         $message = hash('sha256', (string) microtime(true));
 
         $template  = new TemplateRenderer();
-        $path      = realpath(__DIR__ . '/TestAsset/error');
+        $path      = (string) realpath(__DIR__ . '/TestAsset/error');
         $namespace = 'error';
         $template->addPath($path, $namespace);
 
