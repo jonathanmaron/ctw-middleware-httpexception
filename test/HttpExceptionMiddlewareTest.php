@@ -44,7 +44,9 @@ class HttpExceptionMiddlewareTest extends AbstractCase
     {
         unset($message);
 
-        $expected = HttpStatus::STATUS_BAD_REQUEST;
+        $statusCode = HttpStatus::STATUS_BAD_REQUEST;
+
+        $expected = $statusCode;
         $this->assertSame($expected, $array['statusCode']);
 
         $expected = 'Bad Request';
@@ -53,10 +55,10 @@ class HttpExceptionMiddlewareTest extends AbstractCase
         $expected = 'The request cannot be fulfilled due to bad syntax.';
         $this->assertSame($expected, $array['phrase']);
 
-        $expected = 'Ctw\\Http\\HttpException\\BadRequestException';
+        $expected = HttpException\BadRequestException::class;
         $this->assertSame($expected, $array['exception']);
 
-        $expected = 'https://httpstatuses.com/400';
+        $expected = sprintf('https://httpstatuses.com/%d', $statusCode);
         $this->assertSame($expected, $array['url']);
     }
 
