@@ -1,0 +1,21 @@
+<?php
+declare(strict_types=1);
+
+use Ctw\Http\Entity\HttpStatus as Entity;
+use Ctw\Http\HttpException;
+
+/** @var Entity $entity */
+$entity = $this->entity;
+
+/** @var HttpException\NotFoundException $exception */
+$exception = $this->exception;
+
+$vars = [
+    'entity'    => $entity,
+    'exception' => [
+        'message'    => $exception->getMessage(),
+        'statusCode' => $exception->getStatusCode(),
+    ],
+];
+
+echo json_encode($vars);
