@@ -6,6 +6,8 @@ namespace CtwTest\Middleware\HttpExceptionMiddleware;
 use Ctw\Http\HttpException;
 use Ctw\Http\HttpStatus;
 use Ctw\Middleware\HttpExceptionMiddleware\HttpExceptionMiddleware;
+use Ctw\Middleware\HttpExceptionMiddleware\HttpExceptionMiddlewareFactory;
+use Laminas\ServiceManager\ServiceManager;
 use Mezzio\LaminasView\LaminasViewRenderer as TemplateRenderer;
 use Middlewares\Utils\Dispatcher;
 use Psr\Http\Message\ResponseInterface;
@@ -16,16 +18,8 @@ class HttpExceptionMiddlewareTest extends AbstractCase
     {
         $message = hash('sha256', (string) microtime(true));
 
-        $template  = new TemplateRenderer();
-        $path      = (string) realpath(__DIR__ . '/TestAsset/error');
-        $namespace = 'error';
-        $template->addPath($path, $namespace);
-
-        $middleware = new HttpExceptionMiddleware();
-        $middleware->setTemplate($template);
-
         $stack = [
-            $middleware,
+            $this->getInstance(),
             function () use ($message): ResponseInterface {
                 throw new HttpException\BadRequestException($message);
             },
@@ -69,5 +63,20 @@ class HttpExceptionMiddlewareTest extends AbstractCase
 
         $expected = $message;
         $this->assertSame($expected, $array['message']);
+    }
+
+    private function getInstance(): HttpExceptionMiddleware
+    {
+        $template  = new TemplateRenderer();
+        $path      = (string) realpath(__DIR__ . '/TestAsset/error');
+        $namespace = 'error';
+        $template->addPath($path, $namespace);
+
+        $container = new ServiceManager();
+        $container->setService('ctw_template_renderer', $template);
+
+        $factory = new HttpExceptionMiddlewareFactory();
+
+        return $factory->__invoke($container);
     }
 }
