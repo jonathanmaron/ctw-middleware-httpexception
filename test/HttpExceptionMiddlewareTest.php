@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace CtwTest\Middleware\HttpExceptionMiddleware;
 
-use Ctw\Http\Entity\HttpStatus as Entity;
+use Ctw\Http\Entity;
 use Ctw\Http\HttpException;
 use Ctw\Http\HttpStatus;
 use Ctw\Middleware\HttpExceptionMiddleware\HttpExceptionMiddleware;
@@ -41,7 +41,7 @@ class HttpExceptionMiddlewareTest extends AbstractCase
         $this->verifyException($exception, $message);
     }
 
-    private function verifyEntity(Entity $entity, string $message): void
+    private function verifyEntity(Entity\HttpStatus $entity, string $message): void
     {
         unset($message);
 
