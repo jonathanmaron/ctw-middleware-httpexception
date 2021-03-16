@@ -10,12 +10,4 @@ $entity = $this->entity;
 /** @var HttpException\NotFoundException $exception */
 $exception = $this->exception;
 
-$vars = [
-    'entity'    => $entity,
-    'exception' => [
-        'message'    => $exception->getMessage(),
-        'statusCode' => $exception->getStatusCode(),
-    ],
-];
-
-echo json_encode($vars);
+echo serialize([$entity, $exception]);

@@ -3,13 +3,13 @@ declare(strict_types=1);
 
 namespace CtwTest\Middleware\HttpExceptionMiddleware;
 
+use Ctw\Http\Entity\HttpStatus as Entity;
 use Ctw\Http\HttpException;
 use Ctw\Http\HttpStatus;
 use Ctw\Middleware\HttpExceptionMiddleware\HttpExceptionMiddleware;
 use Mezzio\LaminasView\LaminasViewRenderer as TemplateRenderer;
 use Middlewares\Utils\Dispatcher;
 use Psr\Http\Message\ResponseInterface;
-use stdClass;
 
 class HttpExceptionMiddlewareTest extends AbstractCase
 {
@@ -34,13 +34,14 @@ class HttpExceptionMiddlewareTest extends AbstractCase
 
         $response = Dispatcher::run($stack);
         $contents = $response->getBody()->getContents();
-        $result   = json_decode($contents);
 
-        $this->verifyEntity($result->entity, $message);
-        $this->verifyException($result->exception, $message);
+        [$entity, $exception] = unserialize($contents);
+
+        $this->verifyEntity($entity, $message);
+        $this->verifyException($exception, $message);
     }
 
-    private function verifyEntity(stdClass $entity, string $message): void
+    private function verifyEntity(Entity $entity, string $message): void
     {
         unset($message);
 
@@ -60,12 +61,12 @@ class HttpExceptionMiddlewareTest extends AbstractCase
         $this->assertSame($expected, $entity->url);
     }
 
-    private function verifyException(stdClass $exception, string $message): void
+    private function verifyException(HttpException\BadRequestException $exception, string $message): void
     {
         $expected = HttpStatus::STATUS_BAD_REQUEST;
-        $this->assertSame($expected, $exception->statusCode);
+        $this->assertSame($expected, $exception->getStatusCode());
 
         $expected = $message;
-        $this->assertSame($expected, $exception->message);
+        $this->assertSame($expected, $exception->getMessage());
     }
 }
