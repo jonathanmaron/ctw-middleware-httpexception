@@ -17,7 +17,6 @@
     },
     "require-dev": {
         "ext-json": "*",
-        "laminas/laminas-diactoros": "^2.5",
         "laminas/laminas-development-mode": "^3.3",
         "phpstan/phpstan": "^0.12",
         "phpunit/phpunit": "^9.5",
