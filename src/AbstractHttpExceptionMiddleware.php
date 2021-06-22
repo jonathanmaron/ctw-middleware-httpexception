@@ -30,7 +30,7 @@ abstract class AbstractHttpExceptionMiddleware implements MiddlewareInterface
 
     protected function asJson(ServerRequestInterface $request): bool
     {
-        $header = (array) $request->getHeader('Accept');
+        $header = $request->getHeader('Accept');
         $header = array_filter($header, function (string $string): bool {
             $pos = strpos($string, 'application/json');
             return is_int($pos);

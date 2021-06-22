@@ -54,9 +54,9 @@ class HttpExceptionMiddlewareTest extends AbstractCase
 
         $headers = $response->getHeaders();
 
-        $this->assertArrayHasKey('Content-Type', $headers);
-        $this->assertArrayHasKey(0, $headers['Content-Type']);
-        $this->assertSame($headers['Content-Type'][0], 'application/problem+json');
+        self::assertArrayHasKey('Content-Type', $headers);
+        self::assertArrayHasKey(0, $headers['Content-Type']);
+        self::assertSame($headers['Content-Type'][0], 'application/problem+json');
 
         $entity = json_decode($contents, true);
 
@@ -70,19 +70,19 @@ class HttpExceptionMiddlewareTest extends AbstractCase
         $statusCode = HttpStatus::STATUS_BAD_REQUEST;
 
         $expected = $statusCode;
-        $this->assertSame($expected, $array['statusCode']);
+        self::assertSame($expected, $array['statusCode']);
 
         $expected = 'Bad Request';
-        $this->assertSame($expected, $array['name']);
+        self::assertSame($expected, $array['name']);
 
         $expected = 'The request cannot be fulfilled due to bad syntax.';
-        $this->assertSame($expected, $array['phrase']);
+        self::assertSame($expected, $array['phrase']);
 
         $expected = HttpException\BadRequestException::class;
-        $this->assertSame($expected, $array['exception']);
+        self::assertSame($expected, $array['exception']);
 
         $expected = sprintf('https://httpstatuses.com/%d', $statusCode);
-        $this->assertSame($expected, $array['url']);
+        self::assertSame($expected, $array['url']);
     }
 
     private function verifyProblemJson(array $array, string $message): void
@@ -90,25 +90,25 @@ class HttpExceptionMiddlewareTest extends AbstractCase
         $statusCode = HttpStatus::STATUS_BAD_REQUEST;
 
         $expected = sprintf('https://httpstatuses.com/%d', $statusCode);
-        $this->assertSame($expected, $array['type']);
+        self::assertSame($expected, $array['type']);
 
         $expected = 'Bad Request';
-        $this->assertSame($expected, $array['title']);
+        self::assertSame($expected, $array['title']);
 
         $expected = $statusCode;
-        $this->assertSame($expected, $array['status']);
+        self::assertSame($expected, $array['status']);
 
         $expected = $message;
-        $this->assertSame($expected, $array['detail']);
+        self::assertSame($expected, $array['detail']);
     }
 
     private function verifyException(array $array, string $message): void
     {
         $expected = HttpStatus::STATUS_BAD_REQUEST;
-        $this->assertSame($expected, $array['statusCode']);
+        self::assertSame($expected, $array['statusCode']);
 
         $expected = $message;
-        $this->assertSame($expected, $array['message']);
+        self::assertSame($expected, $array['message']);
     }
 
     private function getInstance(): HttpExceptionMiddleware
