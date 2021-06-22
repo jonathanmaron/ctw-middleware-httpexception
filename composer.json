@@ -4,7 +4,7 @@
     "description": "This PSR-15 middleware catches exceptions implementing \"Ctw\\Http\\HttpException\\HttpException\\HttpExceptionInterface\" and returns a custom error page.",
     "license": "BSD-3-Clause",
     "require": {
-        "php": "^7.4",
+        "php": "^7.4 || ^8.0",
         "ctw/ctw-http": "^1.0",
         "ctw/ctw-middleware": "^1.0",
         "laminas/laminas-diactoros": "^2.5",
