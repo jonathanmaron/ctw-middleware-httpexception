@@ -5,7 +5,7 @@
     "type": "library",
     "require": {
         "php": "^7.4 || ^8.0",
-        "ctw/ctw-http": "^1.0",
+        "ctw/ctw-http": "^2.0",
         "ctw/ctw-middleware": "^2.0",
         "laminas/laminas-diactoros": "^2.5",
         "mezzio/mezzio-laminasviewrenderer": "^2.2",
