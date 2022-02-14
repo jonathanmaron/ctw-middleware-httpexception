@@ -29,7 +29,10 @@ class HttpExceptionMiddlewareTest extends AbstractCase
         $response = Dispatcher::run($stack);
         $contents = $response->getBody()->getContents();
 
-        [$entity, $exception] = json_decode($contents, true);
+        $array = json_decode($contents, true);
+        assert(is_array($array));
+
+        [$entity, $exception] = $array;
 
         $this->verifyEntity($entity, $message);
         $this->verifyException($exception, $message);
@@ -59,6 +62,7 @@ class HttpExceptionMiddlewareTest extends AbstractCase
         self::assertSame($headers['Content-Type'][0], 'application/problem+json');
 
         $entity = json_decode($contents, true);
+        assert(is_array($entity));
 
         $this->verifyProblemJson($entity, $message);
     }

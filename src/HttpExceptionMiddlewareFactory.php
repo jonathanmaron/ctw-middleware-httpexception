@@ -17,6 +17,8 @@ class HttpExceptionMiddlewareFactory
             $template = $container->get(Template::class);
         }
 
+        assert($template instanceof Template);
+
         $middleware = new HttpExceptionMiddleware();
         $middleware->setTemplate($template);
 

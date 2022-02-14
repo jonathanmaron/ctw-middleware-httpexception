@@ -1,15 +1,15 @@
 {
     "name": "ctw/ctw-middleware-http-exception",
-    "type": "library",
     "description": "This PSR-15 middleware catches exceptions implementing \"Ctw\\Http\\HttpException\\HttpException\\HttpExceptionInterface\" and returns a custom error page.",
     "license": "BSD-3-Clause",
+    "type": "library",
     "require": {
         "php": "^7.4 || ^8.0",
         "ctw/ctw-http": "^1.0",
-        "ctw/ctw-middleware": "^1.0",
+        "ctw/ctw-middleware": "^2.0",
         "laminas/laminas-diactoros": "^2.5",
         "mezzio/mezzio-laminasviewrenderer": "^2.2",
-        "mezzio/mezzio-template": "^2.1",
+        "mezzio/mezzio-template": "^2.4",
         "psr/http-message": "^1.0"
     },
     "require-dev": {
@@ -17,14 +17,11 @@
         "laminas/laminas-development-mode": "^3.3",
         "laminas/laminas-servicemanager": "^3.6",
         "phpstan/extension-installer": "^1.1",
-        "phpstan/phpstan": "^0.12",
-        "phpstan/phpstan-strict-rules": "^0.12",
+        "phpstan/phpstan": "^1.4",
+        "phpstan/phpstan-strict-rules": "^1.1",
         "phpunit/phpunit": "^9.5",
         "squizlabs/php_codesniffer": "^3.5",
-        "symfony/var-dumper": "^5.2"
-    },
-    "config": {
-        "sort-packages": true
+        "symfony/var-dumper": "^5.2 || ^6.0"
     },
     "autoload": {
         "psr-4": {
@@ -35,6 +32,12 @@
         "psr-4": {
             "CtwTest\\Middleware\\HttpExceptionMiddleware\\": "test"
         }
+    },
+    "config": {
+        "allow-plugins": {
+            "phpstan/extension-installer": true
+        },
+        "sort-packages": true
     },
     "scripts": {
         "phpcbf": "vendor/bin/phpcbf",
