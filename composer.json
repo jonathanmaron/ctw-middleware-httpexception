@@ -10,6 +10,7 @@
         "laminas/laminas-diactoros": "^2.5",
         "mezzio/mezzio-laminasviewrenderer": "^2.2",
         "mezzio/mezzio-template": "^2.4",
+        "psr/container": "^1.0 || ^2.0",
         "psr/http-message": "^1.0"
     },
     "require-dev": {
