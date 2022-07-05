@@ -4,10 +4,16 @@ declare(strict_types=1);
 namespace Ctw\Middleware\HttpExceptionMiddleware;
 
 use Mezzio\Template\TemplateRendererInterface as Template;
+use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\ContainerInterface;
+use Psr\Container\NotFoundExceptionInterface;
 
 class HttpExceptionMiddlewareFactory
 {
+    /**
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
+     */
     public function __invoke(ContainerInterface $container): HttpExceptionMiddleware
     {
         $template = null;
