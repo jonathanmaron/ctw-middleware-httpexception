@@ -4,7 +4,7 @@
     "license": "BSD-3-Clause",
     "type": "library",
     "require": {
-        "php": "^8.0",
+        "php": "^8.1",
         "ctw/ctw-http": "^3.0",
         "ctw/ctw-middleware": "^3.0",
         "laminas/laminas-diactoros": "^2.5",
