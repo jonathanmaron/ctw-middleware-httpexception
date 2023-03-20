@@ -15,7 +15,7 @@
     </report>
   </coverage>
   <testsuites>
-    <testsuite name="ctw/ctw-middleware-http-exception">
+    <testsuite name="ctw/ctw-middleware-httpexception">
       <directory>test</directory>
     </testsuite>
   </testsuites>

@@ -1,5 +1,5 @@
 {
-    "name": "ctw/ctw-middleware-http-exception",
+    "name": "ctw/ctw-middleware-httpexception",
     "description": "This PSR-15 middleware catches exceptions implementing \"Ctw\\Http\\HttpException\\HttpException\\HttpExceptionInterface\" and returns a custom error page.",
     "license": "BSD-3-Clause",
     "type": "library",

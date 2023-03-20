@@ -1,9 +1,9 @@
-# ctw-middleware-http-exception
+# ctw-middleware-httpexception
 
-[![Build Status](https://scrutinizer-ci.com/g/jonathanmaron/ctw-middleware-http-exception/badges/build.png?b=master)](https://scrutinizer-ci.com/g/jonathanmaron/ctw-middleware-http-exception/build-status/master)
-[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/jonathanmaron/ctw-middleware-http-exception/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/jonathanmaron/ctw-middleware-http-exception/?branch=master)
-[![Latest Stable Version](https://poser.pugx.org/ctw/ctw-middleware-http-exception/v/stable)](https://packagist.org/packages/ctw/ctw-middleware-http-exception)
+[![Build Status](https://scrutinizer-ci.com/g/jonathanmaron/ctw-middleware-httpexception/badges/build.png?b=master)](https://scrutinizer-ci.com/g/jonathanmaron/ctw-middleware-httpexception/build-status/master)
+[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/jonathanmaron/ctw-middleware-httpexception/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/jonathanmaron/ctw-middleware-httpexception/?branch=master)
+[![Latest Stable Version](https://poser.pugx.org/ctw/ctw-middleware-httpexception/v/stable)](https://packagist.org/packages/ctw/ctw-middleware-httpexception)
 
 ```bash
-$ composer require ctw/ctw-middleware-http-exception
+$ composer require ctw/ctw-middleware-httpexception
 ```
