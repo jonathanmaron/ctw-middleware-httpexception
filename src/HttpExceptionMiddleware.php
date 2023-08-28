@@ -15,18 +15,16 @@ class HttpExceptionMiddleware extends AbstractHttpExceptionMiddleware
     {
         try {
             return $handler->handle($request);
-        } catch (Throwable $exception) {
+        } catch (Throwable $throwable) {
             // continue;
         }
 
-        if (!$this->isDevelopmentMode()) {
-            if ($exception instanceof HttpException\HttpExceptionInterface) {
-                return $this->asJson($request)
-                    ? $this->getJsonResponse($exception)
-                    : $this->getHtmlResponse($exception);
-            }
+        if (!$this->isDevelopmentMode() && $throwable instanceof HttpException\HttpExceptionInterface) {
+            return $this->asJson($request)
+                ? $this->getJsonResponse($throwable)
+                : $this->getHtmlResponse($throwable);
         }
 
-        throw $exception;
+        throw $throwable;
     }
 }

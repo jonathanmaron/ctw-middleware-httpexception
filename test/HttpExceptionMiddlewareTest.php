@@ -11,7 +11,6 @@ use Laminas\ServiceManager\ServiceManager;
 use Mezzio\LaminasView\LaminasViewRenderer as TemplateRenderer;
 use Middlewares\Utils\Dispatcher;
 use Middlewares\Utils\Factory;
-use Psr\Http\Message\ResponseInterface;
 
 class HttpExceptionMiddlewareTest extends AbstractCase
 {
@@ -21,15 +20,16 @@ class HttpExceptionMiddlewareTest extends AbstractCase
 
         $stack = [
             $this->getInstance(),
-            function () use ($message): ResponseInterface {
+            static function () use ($message): never {
                 throw new HttpException\BadRequestException($message);
             },
         ];
 
         $response = Dispatcher::run($stack);
-        $contents = $response->getBody()->getContents();
+        $contents = $response->getBody()
+            ->getContents();
 
-        $array = json_decode($contents, true);
+        $array = json_decode($contents, true, 512, JSON_THROW_ON_ERROR);
         assert(is_array($array));
 
         [$entity, $exception] = $array;
@@ -47,13 +47,14 @@ class HttpExceptionMiddlewareTest extends AbstractCase
 
         $stack = [
             $this->getInstance(),
-            function () use ($message): ResponseInterface {
+            static function () use ($message): never {
                 throw new HttpException\BadRequestException($message);
             },
         ];
 
         $response = Dispatcher::run($stack, $request);
-        $contents = $response->getBody()->getContents();
+        $contents = $response->getBody()
+            ->getContents();
 
         $headers = $response->getHeaders();
 
@@ -61,7 +62,7 @@ class HttpExceptionMiddlewareTest extends AbstractCase
         self::assertArrayHasKey(0, $headers['Content-Type']);
         self::assertSame($headers['Content-Type'][0], 'application/problem+json');
 
-        $entity = json_decode($contents, true);
+        $entity = json_decode($contents, true, 512, JSON_THROW_ON_ERROR);
         assert(is_array($entity));
 
         $this->verifyProblemJson($entity, $message);

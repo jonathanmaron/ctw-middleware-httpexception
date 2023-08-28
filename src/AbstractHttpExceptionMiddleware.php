@@ -31,12 +31,12 @@ abstract class AbstractHttpExceptionMiddleware implements MiddlewareInterface
     protected function asJson(ServerRequestInterface $request): bool
     {
         $header = $request->getHeader('Accept');
-        $header = array_filter($header, function (string $string): bool {
+        $header = array_filter($header, static function (string $string): bool {
             $pos = strpos($string, 'application/json');
             return is_int($pos);
         });
 
-        return count($header) > 0;
+        return [] !== $header;
     }
 
     protected function getJsonResponse(HttpException\HttpExceptionInterface $exception): JsonResponse
@@ -52,7 +52,9 @@ abstract class AbstractHttpExceptionMiddleware implements MiddlewareInterface
             'detail' => $exception->getMessage(),
         ];
 
-        return new JsonResponse($data, $exception->getStatusCode(), ['Content-Type' => 'application/problem+json']);
+        return new JsonResponse($data, $exception->getStatusCode(), [
+            'Content-Type' => 'application/problem+json',
+        ]);
     }
 
     protected function getHtmlResponse(HttpException\HttpExceptionInterface $exception): HtmlResponse
@@ -66,7 +68,8 @@ abstract class AbstractHttpExceptionMiddleware implements MiddlewareInterface
             'exception' => $exception,
         ];
 
-        $html = $this->getTemplate()->render('error::http-exception', $data);
+        $html = $this->getTemplate()
+            ->render('error::http-exception', $data);
 
         return new HtmlResponse($html, $exception->getStatusCode());
     }
@@ -78,7 +81,7 @@ abstract class AbstractHttpExceptionMiddleware implements MiddlewareInterface
 
         // "composer install --no-dev" removes this class
         $class = '\Laminas\DevelopmentMode\Status';
-        if (false === class_exists($class)) {
+        if (!class_exists($class)) {
             return false;
         }
 
