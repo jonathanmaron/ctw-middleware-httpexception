@@ -59,6 +59,7 @@ abstract class AbstractHttpExceptionMiddleware implements MiddlewareInterface
 
     protected function getHtmlResponse(HttpException\HttpExceptionInterface $exception): HtmlResponse
     {
+        $template   = $this->getTemplate();
         $statusCode = $exception->getStatusCode();
 
         $entity = (new HttpStatus($statusCode))->get();
@@ -68,8 +69,7 @@ abstract class AbstractHttpExceptionMiddleware implements MiddlewareInterface
             'exception' => $exception,
         ];
 
-        $html = $this->getTemplate()
-            ->render('error::http-exception', $data);
+        $html = $template->render('error::http-exception', $data);
 
         return new HtmlResponse($html, $exception->getStatusCode());
     }

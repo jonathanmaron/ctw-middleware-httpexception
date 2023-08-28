@@ -26,8 +26,8 @@ class HttpExceptionMiddlewareTest extends AbstractCase
         ];
 
         $response = Dispatcher::run($stack);
-        $contents = $response->getBody()
-            ->getContents();
+        $body     = $response->getBody();
+        $contents = $body->getContents();
 
         $array = json_decode($contents, true, 512, JSON_THROW_ON_ERROR);
         assert(is_array($array));
@@ -53,8 +53,8 @@ class HttpExceptionMiddlewareTest extends AbstractCase
         ];
 
         $response = Dispatcher::run($stack, $request);
-        $contents = $response->getBody()
-            ->getContents();
+        $body     = $response->getBody();
+        $contents = $body->getContents();
 
         $headers = $response->getHeaders();
 
