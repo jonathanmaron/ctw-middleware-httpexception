@@ -4,11 +4,13 @@ declare(strict_types=1);
 use Ctw\Http\Entity;
 use Ctw\Http\HttpException;
 
-/** @var Entity\HttpStatus $entity */
+// @phpstan-ignore-next-line
 $entity = $this->entity;
+assert($entity instanceof Entity\HttpStatus);
 
-/** @var HttpException\NotFoundException $exception */
+// @phpstan-ignore-next-line
 $exception = $this->exception;
+assert($exception instanceof HttpException\AbstractException);
 
 $vars = [
     $entity,

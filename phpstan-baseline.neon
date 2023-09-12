@@ -1,6 +1,0 @@
-parameters:
-	ignoreErrors:
-		-
-			message: "#^Variable \\$this might not be defined\\.$#"
-			count: 2
-			path: test/TestAsset/error/http-exception.phtml
