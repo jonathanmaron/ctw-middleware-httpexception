@@ -4,9 +4,9 @@
     "license": "BSD-3-Clause",
     "type": "library",
     "require": {
-        "php": "^8.1",
-        "ctw/ctw-http": "^3.0",
-        "ctw/ctw-middleware": "^3.0",
+        "php": "^8.3",
+        "ctw/ctw-http": "dev-php83",
+        "ctw/ctw-middleware": "dev-php83",
         "laminas/laminas-diactoros": "^2.5",
         "mezzio/mezzio-laminasviewrenderer": "^2.2",
         "mezzio/mezzio-template": "^2.4",
@@ -14,14 +14,14 @@
         "psr/http-message": "^1.0"
     },
     "require-dev": {
-        "ctw/ctw-qa": "^1.0",
+        "ctw/ctw-qa": "dev-php83",
         "phpstan/extension-installer": "^1.1",
         "phpstan/phpstan": "^1.7",
         "phpstan/phpstan-phpunit": "^1.1",
         "phpstan/phpstan-strict-rules": "^1.3",
         "phpunit/phpunit": "^10.0",
         "squizlabs/php_codesniffer": "^3.6",
-        "symfony/var-dumper": "^6.0"
+        "symfony/var-dumper": "^7.0"
     },
     "autoload": {
         "psr-4": {
