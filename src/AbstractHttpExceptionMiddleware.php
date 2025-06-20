@@ -16,6 +16,20 @@ abstract class AbstractHttpExceptionMiddleware implements MiddlewareInterface
 {
     private Template $template;
 
+    protected array  $errorHandlerConfig = [];
+
+    public function getErrorHandlerConfig(): array
+    {
+        return $this->errorHandlerConfig;
+    }
+
+    public function setErrorHandlerConfig(array $errorHandlerConfig): self
+    {
+        $this->errorHandlerConfig = $errorHandlerConfig;
+
+        return $this;
+    }
+
     public function getTemplate(): Template
     {
         return $this->template;
@@ -33,6 +47,7 @@ abstract class AbstractHttpExceptionMiddleware implements MiddlewareInterface
         $header = $request->getHeader('Accept');
         $header = array_filter($header, static function (string $string): bool {
             $pos = strpos($string, 'application/json');
+
             return is_int($pos);
         });
 
@@ -59,17 +74,34 @@ abstract class AbstractHttpExceptionMiddleware implements MiddlewareInterface
 
     protected function getHtmlResponse(HttpException\HttpExceptionInterface $exception): HtmlResponse
     {
+        $config     = $this->getErrorHandlerConfig();
         $template   = $this->getTemplate();
         $statusCode = $exception->getStatusCode();
 
         $entity = (new HttpStatus($statusCode))->get();
+
+        if (isset($config['template_http_exception']) && is_array($config['template_http_exception'])) {
+            $name = $config['template_http_exception'];
+        } else {
+            $name = 'error::http-exception.phtml';
+        }
+
+        if (isset($config['layout']) && is_string($config['layout'])) {
+            $layout = $config['layout'];
+        } else {
+            $layout = '';
+        }
 
         $data = [
             'entity'    => $entity,
             'exception' => $exception,
         ];
 
-        $html = $template->render('error::http-exception', $data);
+        if ('' !== $layout) {
+            $data['layout'] = $layout;
+        }
+
+        $html = $template->render($name, $data);
 
         return new HtmlResponse($html, $exception->getStatusCode());
     }
