@@ -14,9 +14,9 @@ use Psr\Http\Server\MiddlewareInterface;
 
 abstract class AbstractHttpExceptionMiddleware implements MiddlewareInterface
 {
-    private Template $template;
+    protected array $errorHandlerConfig = [];
 
-    protected array  $errorHandlerConfig = [];
+    private Template $template;
 
     public function getErrorHandlerConfig(): array
     {
@@ -86,11 +86,7 @@ abstract class AbstractHttpExceptionMiddleware implements MiddlewareInterface
             $name = 'error::http-exception.phtml';
         }
 
-        if (isset($config['layout']) && is_string($config['layout'])) {
-            $layout = $config['layout'];
-        } else {
-            $layout = '';
-        }
+        $layout = isset($config['layout']) && is_string($config['layout']) ? $config['layout'] : '';
 
         $data = [
             'entity'    => $entity,
