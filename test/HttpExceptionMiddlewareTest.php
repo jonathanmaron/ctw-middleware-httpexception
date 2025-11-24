@@ -33,6 +33,8 @@ class HttpExceptionMiddlewareTest extends AbstractCase
         assert(is_array($array));
 
         [$entity, $exception] = $array;
+        assert(is_array($entity));
+        assert(is_array($exception));
 
         $this->verifyEntity($entity, $message);
         $this->verifyException($exception, $message);

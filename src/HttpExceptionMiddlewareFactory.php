@@ -23,10 +23,12 @@ class HttpExceptionMiddlewareFactory
         $middleware->setTemplate($template);
 
         $config = $container->get('config');
-        if (isset($config['mezzio']['error_handler'])) {
-            $config = $config['mezzio']['error_handler'];
-            if (is_array($config)) {
-                $middleware->setErrorHandlerConfig($config);
+        if (is_array($config) && isset($config['mezzio']) && is_array(
+            $config['mezzio']
+        ) && isset($config['mezzio']['error_handler'])) {
+            $errorHandlerConfig = $config['mezzio']['error_handler'];
+            if (is_array($errorHandlerConfig)) {
+                $middleware->setErrorHandlerConfig($errorHandlerConfig);
             }
         }
 

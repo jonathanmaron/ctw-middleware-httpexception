@@ -80,7 +80,7 @@ abstract class AbstractHttpExceptionMiddleware implements MiddlewareInterface
 
         $entity = (new HttpStatus($statusCode))->get();
 
-        if (isset($config['template_http_exception']) && is_array($config['template_http_exception'])) {
+        if (isset($config['template_http_exception']) && is_string($config['template_http_exception'])) {
             $name = $config['template_http_exception'];
         } else {
             $name = 'error::http-exception.phtml';
