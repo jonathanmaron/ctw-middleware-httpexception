@@ -5,8 +5,31 @@
 - **Date:** 2026-06-25
 
 This is a **TODO list** of the changes required for this package to run cleanly
-under PHP 8.5.7. Nothing here has been fixed yet — the fixes happen in a second
-step. Boxes are intentionally left unchecked.
+under PHP 8.5.7. Boxes are intentionally left unchecked.
+
+---
+
+## ✅ Applied on `php85` (diactoros blocker resolved — package now fully green)
+
+> Supersedes the "❌ FAILS" analysis below.
+
+`composer.json` changes:
+
+- [x] `laminas/laminas-diactoros` `^2.5` → **`^3.0`** (installs 3.8.0).
+- [x] `psr/http-message` `^1.0` → **`^1.1 || ^2.0`**.
+- [x] `ctw/ctw-middleware` `^4.0` → **`dev-php85`** (diactoros 3 / middlewares-utils 4 / servicemanager 4.5).
+- [x] `ctw/ctw-http` `^4.0` → **`dev-php85`** (pulls the explicit-nullable
+  `$previous` fix, clearing the two `ctw/ctw-http` deprecations).
+- [x] `mezzio/mezzio-laminasviewrenderer ^2.2` / `mezzio/mezzio-template ^2.4`
+  **left as-is** — `composer update -W` resolves PHP 8.5-compatible releases
+  within range (2.19.0 / 2.13.0); no major bump needed.
+
+**Result:** `composer update -W` is green and `phpunit --no-coverage` reports
+**3 tests, 15 assertions, 0 deprecations**.
+
+Residual: only the shared PHPStan `missingType.*` unmatched-ignore (§3, owned by
+`ctw/ctw-qa`). Note `laminas/laminas-json` is flagged abandoned (pre-existing
+transitive dep). Re-tag the `ctw/*` deps to stable releases before merge.
 
 > ⚠️ **Heaviest dependency surface in the set** — declares `laminas-diactoros`
 > *and* two `mezzio/*` packages directly. Expect to bump several constraints.
