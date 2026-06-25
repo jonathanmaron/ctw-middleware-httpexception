@@ -1,127 +1,132 @@
-# PHP 8.5.7 Upgrade — `ctw/ctw-middleware-httpexception`
+# PHP 8.5.7 Migration — `ctw/ctw-middleware-httpexception`
 
 - **Branch:** `php85` (cut from `master`)
 - **Runtime:** PHP 8.3.31 → **8.5.7**
+- **PHPUnit:** 12 → **13.2.1**
 - **Date:** 2026-06-25
+- **Status:** ✅ done
 
-This is a **TODO list** of the changes required for this package to run cleanly
-under PHP 8.5.7. Boxes are intentionally left unchecked.
-
----
-
-## ✅ Applied on `php85` (diactoros blocker resolved — package now fully green)
-
-> Supersedes the "❌ FAILS" analysis below.
-
-`composer.json` changes:
-
-- [x] `laminas/laminas-diactoros` `^2.5` → **`^3.0`** (installs 3.8.0).
-- [x] `psr/http-message` `^1.0` → **`^1.1 || ^2.0`**.
-- [x] `ctw/ctw-middleware` `^4.0` → **`dev-php85`** (diactoros 3 / middlewares-utils 4 / servicemanager 4.5).
-- [x] `ctw/ctw-http` `^4.0` → **`dev-php85`** (pulls the explicit-nullable
-  `$previous` fix, clearing the two `ctw/ctw-http` deprecations).
-- [x] `mezzio/mezzio-laminasviewrenderer ^2.2` / `mezzio/mezzio-template ^2.4`
-  **left as-is** — `composer update -W` resolves PHP 8.5-compatible releases
-  within range (2.19.0 / 2.13.0); no major bump needed.
-
-**Result:** `composer update -W` is green and `phpunit --no-coverage` reports
-**3 tests, 15 assertions, 0 deprecations**.
-
-Residual: only the shared PHPStan `missingType.*` unmatched-ignore (§3, owned by
-`ctw/ctw-qa`). Note `laminas/laminas-json` is flagged abandoned (pre-existing
-transitive dep). Re-tag the `ctw/*` deps to stable releases before merge.
-
-> ⚠️ **Heaviest dependency surface in the set** — declares `laminas-diactoros`
-> *and* two `mezzio/*` packages directly. Expect to bump several constraints.
-
-Detection commands used:
-
-```bash
-composer update -W
-php vendor/bin/phpunit --no-coverage --display-deprecations --display-warnings --display-notices --display-errors
-composer rector      # rector --dry-run
-composer phpstan
-```
+This is the completed migration checklist for running this package cleanly under
+PHP 8.5.7. Every box is checked and verified against a fresh audit (see
+**Final audit** below). This package has the **heaviest dependency surface** in
+the set — it declares `laminas/laminas-diactoros` and two `mezzio/*` packages
+directly, and pins both `ctw/ctw-http` and `ctw/ctw-middleware` to `dev-php85`.
 
 ---
 
-## 1. `composer update -W` — ❌ FAILS (hard blocker, direct + transitive)
+## Audit checklist
 
-```
-Problem 1
-  - Root composer.json requires laminas/laminas-diactoros ^2.5
-  - laminas/laminas-diactoros[2.5 ... 2.26] require php ^7.3 ... ~8.3.0
-    -> your php version (8.5.7) does not satisfy that requirement.
-```
+### `composer.json` — dependency resolution
 
-`laminas/laminas-diactoros` 2.x caps PHP at `~8.3.0`. This package requires it
-**directly** (`^2.5`) and transitively via `ctw/ctw-middleware ^4.0`.
+- [x] **(fatal) `composer update -W` aborts** — `laminas/laminas-diactoros`
+  2.x caps PHP at `~8.3.0`, so the solver rejects PHP 8.5.7. This package
+  declares `laminas/laminas-diactoros` **directly** (`^2.5`) **and** pulls it
+  transitively via `ctw/ctw-middleware ^4.0`.
 
-- [ ] **`composer.json`** — bump `laminas/laminas-diactoros` `^2.5` → **`^3.0`**.
-- [ ] **`composer.json`** — bump the Mezzio constraints; the current
-  `mezzio/mezzio-laminasviewrenderer ^2.2` and `mezzio/mezzio-template ^2.4`
-  (and the 2.x Mezzio line generally) predate PHP 8.4/8.5 support. Move to the
-  current major (`mezzio/mezzio-laminasviewrenderer ^3.0`,
-  `mezzio/mezzio-template ^3.0`) and re-resolve. **These caps are hidden right
-  now** — composer aborts on Diactoros first, so re-run `composer update -W`
-  after the Diactoros bump to surface the real Mezzio requirements.
-- [ ] **`composer.json`** — `psr/http-message ^1.0` likely needs widening to
-  `^1.1 || ^2.0` for Diactoros 3 / current Mezzio.
-- [ ] **Blocked on `ctw/ctw-middleware`** and **`ctw/ctw-http`** — bump those
-  constraints once their PHP 8.5 releases are published (see their
-  `dev-php85/UPDATE.md`).
+  ```
+  Problem 1
+    - Root composer.json requires laminas/laminas-diactoros ^2.5
+    - laminas/laminas-diactoros[2.5 ... 2.26] require php ^7.3 ... ~8.3.0
+      -> your php version (8.5.7) does not satisfy that requirement.
+  ```
 
-> §2 was captured against the existing (master) lockfile because the update
-> aborts. Additional Mezzio/laminas-view deprecations may appear once the tree
-> actually updates — re-run detection after §1.
+  **Fix:** bump the **direct** constraint `laminas/laminas-diactoros` `^2.5` →
+  **`^3.0`** (installs 3.8.0); widen `psr/http-message` `^1.0` →
+  **`^1.1 || ^2.0`** (installs 2.0) for diactoros 3 / current Mezzio; require
+  `ctw/ctw-middleware: dev-php85` (diactoros 3 / `middlewares/utils` 4) and
+  `ctw/ctw-http: dev-php85` (see below).
+
+### Vendor runtime deprecations (`ctw/ctw-http`)
+
+The two "implicitly nullable parameter" deprecations on the `$previous`
+constructor parameter come from `vendor/ctw/ctw-http` — fixed upstream on its
+own `dev-php85` branch and cleared here by pinning that branch. **No first-party
+`src/` change is required.**
+
+- [x] **(deprecation) `vendor/ctw/ctw-http/src/HttpException/AbstractException.php:16`** —
+  `AbstractException::__construct()` `$previous` implicitly nullable.
+  **Fix:** cleared by pinning `ctw/ctw-http: dev-php85` (explicit `?type` on
+  `$previous`).
+- [x] **(deprecation) `vendor/ctw/ctw-http/src/HttpException/HttpExceptionInterface.php:10`** —
+  `HttpExceptionInterface::__construct()` `$previous` implicitly nullable.
+  **Fix:** cleared by pinning `ctw/ctw-http: dev-php85`.
+
+### Vendor runtime deprecations (`middlewares/utils`)
+
+All five "implicitly nullable parameter" deprecations originate in the
+third-party `middlewares/utils` dependency — **no first-party `src/` change is
+required.**
+
+- [x] **(deprecation) `vendor/middlewares/utils/src/Dispatcher.php:21`** —
+  `Dispatcher::run()` `$request` implicitly nullable.
+  **Fix:** cleared by the `middlewares/utils` → `^4` bump (v4 declares explicit
+  `?type` parameters); pulled in via `ctw/ctw-middleware: dev-php85`.
+- [x] **(deprecation) `vendor/middlewares/utils/src/Factory.php:88`** —
+  `Factory::createUploadedFile()` `$size` implicitly nullable.
+  **Fix:** cleared by the `middlewares/utils` → `^4` bump.
+- [x] **(deprecation) `vendor/middlewares/utils/src/Factory.php:90`** —
+  `Factory::createUploadedFile()` `$filename` implicitly nullable.
+  **Fix:** cleared by the `middlewares/utils` → `^4` bump.
+- [x] **(deprecation) `vendor/middlewares/utils/src/Factory.php:91`** —
+  `Factory::createUploadedFile()` `$mediaType` implicitly nullable.
+  **Fix:** cleared by the `middlewares/utils` → `^4` bump.
+- [x] **(deprecation) `vendor/middlewares/utils/src/CallableHandler.php:25`** —
+  `CallableHandler::__construct()` `$responseFactory` implicitly nullable.
+  **Fix:** cleared by the `middlewares/utils` → `^4` bump.
+
+### Mezzio constraints
+
+- [x] **(warning) `mezzio/mezzio-laminasviewrenderer ^2.2` /
+  `mezzio/mezzio-template ^2.4`** — risk that the declared 2.x lines predate PHP
+  8.5 support and force a major bump.
+  **Fix:** none needed — `composer update -W` resolves PHP 8.5-compatible
+  releases **within range** (2.19.0 and 2.13.0). Constraints left as-is.
+
+### PHPUnit 13
+
+- [x] **(tooling) PHPUnit `^12` → `^13`** — bumped for PHP 8.5 (installs 13.2.1).
+  The existing tests use no expectation-free `createMock()` doubles, so no
+  `createStub()` migration was required.
 
 ---
 
-## 2. PHP 8.5 runtime deprecations (current deps)
+## composer.json & CI
 
-The "implicitly nullable parameter" deprecation, all in **third-party** vendor
-code — **no first-party `src/` change required here:**
+- [x] **require `php`** — `^8.3` → **`^8.5`**. Drops PHP 8.3/8.4 from the
+  supported range.
+- [x] **`laminas/laminas-diactoros`** (direct) — `^2.5` → **`^3.0`** (installs
+  3.8.0). Direct half of the diactoros blocker fix.
+- [x] **`psr/http-message`** — `^1.0` → **`^1.1 || ^2.0`** (installs 2.0).
+- [x] **`ctw/ctw-http`** — `^4.0` → **`dev-php85`**. Clears the two `$previous`
+  deprecations from `vendor/ctw/ctw-http`.
+- [x] **`ctw/ctw-middleware`** — `^4.0` → **`dev-php85`**. Bumps diactoros →
+  3.8.0 and `middlewares/utils` → 4.0.2.
+- [x] **`mezzio/mezzio-laminasviewrenderer ^2.2` / `mezzio/mezzio-template ^2.4`** —
+  left as-is; in-range PHP 8.5-compatible releases resolve (2.19.0 / 2.13.0).
+- [x] **`ctw/ctw-qa`** (dev) — `^5.0` → **`dev-php85`**. PHP 8.5-compatible QA
+  toolchain.
+- [x] **`phpunit/phpunit`** (dev) — `^12.0` → **`^13.0`** (installs 13.2.1).
+- [x] **`.github/workflows/tests.yml`** — matrix pinned to **PHP 8.5 only**
+  (`php: [ '8.5' ]`).
 
-| Location | Method / parameter |
-| --- | --- |
-| `vendor/ctw/ctw-http/src/HttpException/AbstractException.php:16` | `AbstractException::__construct()` `$previous` |
-| `vendor/ctw/ctw-http/src/HttpException/HttpExceptionInterface.php:10` | `HttpExceptionInterface::__construct()` `$previous` |
-| `vendor/middlewares/utils/src/Dispatcher.php:21` | `Dispatcher::run()` `$request` |
-| `vendor/middlewares/utils/src/Factory.php:88` | `Factory::createUploadedFile()` `$size` |
-| `vendor/middlewares/utils/src/Factory.php:90` | `Factory::createUploadedFile()` `$filename` |
-| `vendor/middlewares/utils/src/Factory.php:91` | `Factory::createUploadedFile()` `$mediaType` |
-| `vendor/middlewares/utils/src/CallableHandler.php:25` | `CallableHandler::__construct()` `$responseFactory` |
-
-- [ ] The `ctw/ctw-http` rows are fixed upstream in `ctw/ctw-http`
-  (`ctw-http/dev-php85/UPDATE.md` §2) and clear here once re-published.
-- [ ] The `middlewares/utils` rows clear by updating that dependency once §1 is
-  unblocked.
-
----
-
-## 3. QA tooling issues
-
-- [ ] **PHPStan unmatched ignore pattern** (`missingType.generics`) — fix
-  centrally in **`ctw/ctw-qa`** (`ctw-qa/dev-php85/UPDATE.md` §3). PHPStan
-  currently reports **1 error**, this spurious one only.
+> Note: `laminas/laminas-json` is flagged abandoned upstream — it is a
+> pre-existing transitive dependency via Mezzio, not a migration blocker.
+>
+> Before merge: re-tag the `ctw/*` deps to stable releases and replace the
+> `dev-php85` pins.
 
 ---
 
-## 4. Notes (non-blocking)
+## Final audit (PHP 8.5.7)
 
-- Run locally with `--no-coverage` (no Xdebug/PCOV here). Not a PHP 8.5 issue.
-
----
-
-## 5. Verification snapshot (current state on `php85`)
-
-| Check | Result |
-| --- | --- |
-| `composer update -W` | ❌ fails — direct + transitive `laminas-diactoros` 2.x (§1); Mezzio caps still hidden |
-| PHPUnit (`--no-coverage`, stale deps) | 3 tests, 15 assertions, **7 deprecations** (2× `ctw/ctw-http` + 5× `middlewares/utils`, §2) |
-| Rector (dry-run) | ✅ no changes proposed |
-| PHPStan | ❌ 1 error (shared unmatched-ignore, §3) |
-
-**First-party work needed here:** the `composer.json` constraint bumps in §1
-(Diactoros + Mezzio + psr/http-message). No `src/` edits identified yet — re-run
-detection after the dependency tree updates.
+- [x] **`php -v`** → PHP **8.5.7** (cli).
+- [x] **`composer update -W`** → clean; no security advisories (the
+  `laminas/laminas-json` abandoned notice is informational only). Resolves
+  `laminas/laminas-diactoros 3.8.0`, `psr/http-message 2.0`,
+  `middlewares/utils 4.0.2`, `mezzio/mezzio-laminasviewrenderer 2.19.0`,
+  `mezzio/mezzio-template 2.13.0`, `ctw/ctw-http dev-php85`,
+  `ctw/ctw-middleware dev-php85`, `phpunit/phpunit 13.2.1`.
+- [x] **PHPUnit** (`--no-coverage --display-deprecations --display-warnings
+  --display-notices --display-errors`) → **OK (3 tests, 15 assertions)**, 0
+  deprecations / warnings / notices.
+- [x] **PHPStan** → no issues found (analyzes `src` and `test`).
