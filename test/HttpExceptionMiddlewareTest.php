@@ -70,6 +70,40 @@ final class HttpExceptionMiddlewareTest extends AbstractCase
     }
 
     /**
+     * Test that the middleware renders the HTML error page rather than JSON
+     * when the Accept header is present but does not list "application/json".
+     */
+    public function testProcessRendersHtmlErrorPageWhenAcceptHeaderExcludesJson(): void
+    {
+        $message = hash('sha256', (string) microtime(true));
+
+        $request = Factory::createServerRequest('GET', '/');
+        $request = $request->withHeader('Accept', 'text/html');
+
+        $stack = [
+            $this->getInstance(),
+            static function () use ($message): never {
+                throw new HttpException\BadRequestException($message);
+            },
+        ];
+
+        $response = Dispatcher::run($stack, $request);
+
+        self::assertStringContainsString('text/html', $response->getHeaderLine('Content-Type'));
+        self::assertSame(HttpStatus::STATUS_BAD_REQUEST, $response->getStatusCode());
+
+        $array = json_decode((string) $response->getBody(), true, 512, JSON_THROW_ON_ERROR);
+        assert(is_array($array));
+
+        [$entity, $exception] = $array;
+        assert(is_array($entity));
+        assert(is_array($exception));
+
+        $this->verifyEntity($entity);
+        $this->verifyException($exception, $message);
+    }
+
+    /**
      * Test that the middleware renders a problem+json response with the
      * RFC 7807 fields and the matching content type when the client requests
      * JSON via the Accept header.
