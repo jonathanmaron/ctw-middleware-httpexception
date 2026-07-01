@@ -80,11 +80,10 @@ abstract class AbstractHttpExceptionMiddleware implements MiddlewareInterface
 
         $entity = (new HttpStatus($statusCode))->get();
 
-        if (isset($config['template_http_exception']) && is_string($config['template_http_exception'])) {
-            $name = $config['template_http_exception'];
-        } else {
-            $name = 'error::http-exception.phtml';
-        }
+        $configured = $config['template_http_exception'] ?? null;
+        $name       = is_string($configured) && '' !== $configured
+            ? $configured
+            : 'error::http-exception.phtml';
 
         $layout = isset($config['layout']) && is_string($config['layout']) ? $config['layout'] : '';
 
@@ -115,7 +114,7 @@ abstract class AbstractHttpExceptionMiddleware implements MiddlewareInterface
 
         ob_start();
         (new DevelopmentMode\Status())->__invoke();
-        $ob  = (string) ob_get_clean();
+        $ob  = ob_get_clean();
         $pos = strpos($ob, 'ENABLED');
 
         return is_int($pos);

@@ -12,7 +12,11 @@ use Ctw\Middleware\HttpExceptionMiddleware\HttpExceptionMiddlewareFactory;
 use CtwTest\Middleware\HttpExceptionMiddleware\TestAsset\LaminasDevelopmentModeStatus;
 use Laminas\Diactoros\Response\HtmlResponse;
 use Laminas\ServiceManager\ServiceManager;
+use Laminas\View\HelperPluginManager;
+use Laminas\View\Renderer\PhpRenderer;
+use Laminas\View\Resolver\AggregateResolver;
 use Mezzio\LaminasView\LaminasViewRenderer as TemplateRenderer;
+use Mezzio\LaminasView\NamespacedPathStackResolver;
 use Mezzio\Template\TemplateRendererInterface as Template;
 use Middlewares\Utils\Dispatcher;
 use Middlewares\Utils\Factory;
@@ -436,10 +440,21 @@ final class HttpExceptionMiddlewareTest extends AbstractCase
 
     private function getInstance(): HttpExceptionMiddleware
     {
-        $template  = new TemplateRenderer();
         $path      = (string) realpath(__DIR__ . '/TestAsset/error');
         $namespace = 'error';
-        $template->addPath($path, $namespace);
+
+        // mezzio-laminasviewrenderer 3.x removed the fluent addPath() from the
+        // renderer; paths are now registered on a NamespacedPathStackResolver
+        // that is wrapped in an AggregateResolver and injected into the renderer.
+        $resolver = new NamespacedPathStackResolver();
+        $resolver->addPath($path, $namespace);
+
+        $aggregateResolver = new AggregateResolver();
+        $aggregateResolver->attach($resolver);
+
+        $helpers     = new HelperPluginManager(new ServiceManager());
+        $phpRenderer = new PhpRenderer($helpers, $aggregateResolver, false);
+        $template    = new TemplateRenderer($phpRenderer, $helpers, null);
 
         $container = new ServiceManager();
         $container->setService('ctw_template_renderer', $template);
