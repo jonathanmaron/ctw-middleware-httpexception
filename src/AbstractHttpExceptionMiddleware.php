@@ -58,7 +58,8 @@ abstract class AbstractHttpExceptionMiddleware implements MiddlewareInterface
     {
         $statusCode = $exception->getStatusCode();
 
-        $entity = (new HttpStatus($statusCode))->get();
+        $entity = new HttpStatus($statusCode)
+            ->get();
 
         $data = [
             'type'   => $entity->url,
@@ -78,7 +79,8 @@ abstract class AbstractHttpExceptionMiddleware implements MiddlewareInterface
         $template   = $this->getTemplate();
         $statusCode = $exception->getStatusCode();
 
-        $entity = (new HttpStatus($statusCode))->get();
+        $entity = new HttpStatus($statusCode)
+            ->get();
 
         if (isset($config['template_http_exception']) && is_string($config['template_http_exception'])) {
             $name = $config['template_http_exception'];
@@ -114,8 +116,9 @@ abstract class AbstractHttpExceptionMiddleware implements MiddlewareInterface
         }
 
         ob_start();
-        (new DevelopmentMode\Status())->__invoke();
-        $ob  = (string) ob_get_clean();
+        new DevelopmentMode\Status()
+            ->__invoke();
+        $ob  = ob_get_clean();
         $pos = strpos($ob, 'ENABLED');
 
         return is_int($pos);
