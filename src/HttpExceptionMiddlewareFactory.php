@@ -17,7 +17,11 @@ class HttpExceptionMiddlewareFactory
             $template = $container->get(Template::class);
         }
 
-        assert($template instanceof Template);
+        if (!$template instanceof Template) {
+            throw new \RuntimeException(
+                'Unable to resolve a template renderer; neither "ctw_template_renderer" nor ' . Template::class . ' is registered in the container'
+            );
+        }
 
         $middleware = new HttpExceptionMiddleware();
         $middleware->setTemplate($template);

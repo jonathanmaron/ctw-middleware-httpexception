@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace CtwTest\Middleware\HttpExceptionMiddleware;
 
-use AssertionError;
 use Ctw\Middleware\HttpExceptionMiddleware\HttpExceptionMiddlewareFactory;
 use Mezzio\Template\TemplateRendererInterface as Template;
 use PHPUnit\Framework\Attributes\CoversClass;
 use Psr\Container\ContainerInterface;
+use RuntimeException;
 
 #[CoversClass(HttpExceptionMiddlewareFactory::class)]
 final class HttpExceptionMiddlewareFactoryTest extends AbstractCase
@@ -116,10 +116,10 @@ final class HttpExceptionMiddlewareFactoryTest extends AbstractCase
     }
 
     /**
-     * Test that __invoke triggers an assertion failure when neither template
+     * Test that __invoke throws a RuntimeException when neither template
      * service is registered, because the resolved template remains null.
      */
-    public function testInvokeThrowsAssertionErrorWhenNoTemplateServiceAvailable(): void
+    public function testInvokeThrowsRuntimeExceptionWhenNoTemplateServiceAvailable(): void
     {
         $container = self::createStub(ContainerInterface::class);
         $container->method('has')
@@ -127,7 +127,7 @@ final class HttpExceptionMiddlewareFactoryTest extends AbstractCase
 
         $factory = new HttpExceptionMiddlewareFactory();
 
-        $this->expectException(AssertionError::class);
+        $this->expectException(RuntimeException::class);
 
         $factory->__invoke($container);
     }
