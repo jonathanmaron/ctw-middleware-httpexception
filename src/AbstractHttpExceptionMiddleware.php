@@ -116,7 +116,11 @@ abstract class AbstractHttpExceptionMiddleware implements MiddlewareInterface
         ob_start();
         new DevelopmentMode\Status()
             ->__invoke();
-        $ob  = ob_get_clean();
+        $ob = ob_get_clean();
+        if (false === $ob) {
+            return false;
+        }
+
         $pos = strpos($ob, 'ENABLED');
 
         return is_int($pos);
