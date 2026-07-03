@@ -11,6 +11,7 @@ use Throwable;
 
 class HttpExceptionMiddleware extends AbstractHttpExceptionMiddleware
 {
+    #[\Override]
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
         try {
