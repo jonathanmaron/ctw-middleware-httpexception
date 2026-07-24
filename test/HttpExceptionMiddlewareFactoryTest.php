@@ -4,13 +4,18 @@ declare(strict_types=1);
 
 namespace CtwTest\Middleware\HttpExceptionMiddleware;
 
+use Ctw\Middleware\HttpExceptionMiddleware\AbstractHttpExceptionMiddleware;
+use Ctw\Middleware\HttpExceptionMiddleware\HttpExceptionMiddleware;
 use Ctw\Middleware\HttpExceptionMiddleware\HttpExceptionMiddlewareFactory;
 use Mezzio\Template\TemplateRendererInterface as Template;
 use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\UsesClass;
 use Psr\Container\ContainerInterface;
 use RuntimeException;
 
 #[CoversClass(HttpExceptionMiddlewareFactory::class)]
+#[UsesClass(HttpExceptionMiddleware::class)]
+#[UsesClass(AbstractHttpExceptionMiddleware::class)]
 final class HttpExceptionMiddlewareFactoryTest extends AbstractCase
 {
     /**

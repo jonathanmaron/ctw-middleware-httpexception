@@ -17,6 +17,7 @@ use Mezzio\Template\TemplateRendererInterface as Template;
 use Middlewares\Utils\Dispatcher;
 use Middlewares\Utils\Factory;
 use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\UsesClass;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
@@ -24,6 +25,7 @@ use RuntimeException;
 
 #[CoversClass(HttpExceptionMiddleware::class)]
 #[CoversClass(AbstractHttpExceptionMiddleware::class)]
+#[UsesClass(HttpExceptionMiddlewareFactory::class)]
 final class HttpExceptionMiddlewareTest extends AbstractCase
 {
     /**
